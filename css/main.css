@@ -284,17 +284,24 @@ body {
   background-image: var(--gradient);
   background-size: cover;
   background-repeat: no-repeat;
-  min-height: 100vh;
+  min-height: 92vh;
 }
 
 .container {
   max-width: 80vw;
   margin: 4vw auto;
-  padding: 2rem;
   overflow: hidden;
   background-color: #fff;
   box-shadow: 0 2rem 6rem 0.5rem rgba(var(--color-grey-dark-1), 0.2);
 }
+
+.repeater-buttons {
+  display:flex;
+  align-items: flex-end;
+  gap: calc(var(--bs-gutter-x) * .5);
+}
+
+
 
 @media only screen and (max-width: 1024px) {
   .container {

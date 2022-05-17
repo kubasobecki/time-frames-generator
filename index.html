@@ -21,37 +21,44 @@
 			<div class="row mb-4">
 				<h1 class="text-center">UNIX Time Frames Generator</h1>
 			</div>
-			<form>
+			<form class="main-form needs-validation">
 				<div class="row mb-4">
-					<div class="col-sm-4">
+					<div class="col-sm-3">
 						<label for="timeStart" class="form-label">Start time</label>
-						<input type="datetime-local" class="form-control form-control-lg timeStart">
+						<input type="datetime-local" class="form-control form-control-lg timeStart" id="timeStart" required>
 					</div>
-					<div class="col-sm-4">
+					<div class="col-sm-3">
 						<label for="timeEnd" class="form-label">End time</label>
-						<input type="datetime-local" class="form-control form-control-lg timeEnd">
+						<input type="datetime-local" class="form-control form-control-lg timeEnd" id="timeEnd" required>
 					</div>
-					<div class="col-sm-4">
-						<label for="perDay" class="form-label">Time frames per day</label>
-						<input type="number" class="form-control form-control-lg timeframesPerDay">
+					<div class="col-sm-3">
+						<label for="TFPerDay" class="form-label">Time frames per day</label>
+						<input type="number" value="1" min="1" class="form-control form-control-lg TFPerDay" id="TFPerDay" required>
+					</div>
+					<div class="col-sm-3">
+						<label for="minimumDuration" class="form-label">Minimum duration</label>
+						<div class="input-group col-sm-12">
+							<input type="number" value="1" min="1" class="form-control form-control-lg minimumDuration" id="minimumDuration" required>
+							<span class="input-group-text">min.</span>
+						</div>
 					</div>
 				</div>
 				<div id="repeater-fields" class="row mb-4">
-					<div class="col-sm-4">
-						<label for="excludedTimeStart" class="form-label">Excluded time start</label>
-						<input type="datetime-local" class="form-control form-control-lg excludedTimeStart">
+					<div class="col-sm-3 mb-3" id="gapStart-01">
+						<label for="gapStartField-01" class="form-label">Excluded hours from</label>
+						<input type="time" class="form-control form-control-lg gapStart" id="gapStartField-01">
 					</div>
-					<div class="col-sm-4">
-						<label for="excludedTimeEnd" class="form-label">Excluded time end</label>
-						<input type="datetime-local" class="form-control form-control-lg excludedTimeEnd">
+					<div class="col-sm-3 mb-3" id="gapEnd-01">
+						<label for="gapEndField-01" class="form-label">Excluded hours to</label>
+						<input type="time" class="form-control form-control-lg gapEnd" id="gapEndField-01">
 					</div>
-					<div class="col-sm-4 repeater-buttons">
-						<button type="button" class="btn btn-lg btn-outline-success">Add</button>
-						<button type="button" class="btn btn-lg btn-outline-danger">Remove</button>
+					<div class="col-sm-6 mb-3 repeater-buttons">
+						<button type="button" class="btn btn-lg btn-outline-success repeater-button-add">Add</button>
+						<button type="button" class="btn btn-lg btn-outline-danger repeater-button-remove hidden">Remove</button>
 					</div>
 				</div>
 				<div class="d-grid">
-					<button type="submit" class="btn btn-primary btn-lg text-uppercase">Generate</button>
+					<button type="submit" class="btn btn-primary btn-lg text-uppercase generate-button">Generate Time frames</button>
 				</div>
 			</form>
 			<div id="results" class="row"></div>

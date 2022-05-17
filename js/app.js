@@ -98,12 +98,13 @@ const gapsArray = () => {
   const gapData = getGapsData();
   const result = Array(24 * 60).fill(1);
 
-  gapData.forEach(gap => {
+  gapData.forEach((gap, index, array) => {
+    const duration = +minimumDurationEl.value;
     // Convert to minutes
-    const startH = Number(gap.start.split(':')[0]);
-    const startM = Number(gap.start.split(':')[1]);
-    const endH = Number(gap.end.split(':')[0]);
-    const endM = Number(gap.end.split(':')[1]);
+    const startH = +gap.start.split(':')[0];
+    const startM = +gap.start.split(':')[1];
+    const endH = +gap.end.split(':')[0];
+    const endM = +gap.end.split(':')[1];
     const start = startH * 60 + startM;
     const end = endH * 60 + endM;
 
@@ -111,9 +112,28 @@ const gapsArray = () => {
     if (start < end) result.fill(0, start, end);
     // Handle case if end time is less than start time
     if (start > end) result.fill(0, 0, end).fill(0, start);
+    // Merge gaps which are closer apart than TF duration
+    if (index > 0) {
+      const prev = array[index - 1];
+      const prevEnd = +(prev.end.split(':')[0] * 60 + prev.end.split(':')[1]);
+      console.log('prevend:', prevEnd, 'start:', start);
+      if (prevEnd + duration > start) result.fill(0, prevEnd, start);
+    }
   });
 
   return result;
+};
+
+// Check if possible
+const isPossible = (gaps, duration, perDay) => {
+  const timeAvailable = gaps.filter(el => el > 0).length;
+  // Needs margin for worst case randomization
+  console.log(timeAvailable, (perDay + 2) * duration);
+  if (timeAvailable < duration * perDay + duration + 1) {
+    displayError('Time frames generation impossible with provided criteria.');
+    return false;
+  }
+  return true;
 };
 
 const generateTF = e => {
@@ -129,19 +149,20 @@ const generateTF = e => {
   const duration = +minimumDurationEl.value;
   const gaps = gapsArray();
   const TFindexes = [];
-  const result = [];
+
+  if (!isPossible(gaps, duration, perDay)) return;
 
   console.log(start, end, perDay, duration, gaps);
 
-  // generate random index from 0 to 1339 and check if there are
-  const randomTime = Math.trunc(Math.random() * 1339);
-  // check if there are enough minutes available after the index
   for (let i = 0; i < perDay; i++) {
     const start = Math.trunc(Math.random() * 1339);
     if (!validateTF(start, gaps, duration, TFindexes)) {
       i--;
       continue;
-    } else TFindexes.push(start);
+    } else {
+      TFindexes.push(start);
+      console.log(start);
+    }
   }
   TFindexes.sort((a, b) => a - b);
   console.log(TFindexes);
@@ -149,7 +170,7 @@ const generateTF = e => {
 
 // Validate time frame
 const validateTF = (start, gaps, duration, TFindexes) => {
-  // avoid time frame and gaps collision
+  // avoid time frame collision with gaps
   for (let i = start; i < start + duration; i++) {
     if (!gaps[i]) return false;
   }

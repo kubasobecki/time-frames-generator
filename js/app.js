@@ -76,7 +76,7 @@ const resetErrors = () => {
 };
 
 // Get time fields elements and values
-const getGapsFieldData = () => {
+const getGapsData = () => {
   const gapStart = document.querySelectorAll('.gapStart');
   const gapEnd = document.querySelectorAll('.gapEnd');
   const result = [];
@@ -95,20 +95,21 @@ const getGapsFieldData = () => {
 
 // Create array of 24 * 60 with all gaps
 const gapsArray = () => {
-  const gapFieldsData = getGapsFieldData();
+  const gapData = getGapsData();
   const result = Array(24 * 60).fill(1);
 
-  gapFieldsData.forEach(ex => {
+  gapData.forEach(gap => {
     // Convert to minutes
-    const startH = Number(ex.start.split(':')[0]);
-    const startM = Number(ex.start.split(':')[1]);
-    const endH = Number(ex.end.split(':')[0]);
-    const endM = Number(ex.end.split(':')[1]);
+    const startH = Number(gap.start.split(':')[0]);
+    const startM = Number(gap.start.split(':')[1]);
+    const endH = Number(gap.end.split(':')[0]);
+    const endM = Number(gap.end.split(':')[1]);
     const start = startH * 60 + startM;
     const end = endH * 60 + endM;
 
-    // Handle case if end time is less than start time
+    // Store gaps in array as zeros
     if (start < end) result.fill(0, start, end);
+    // Handle case if end time is less than start time
     if (start > end) result.fill(0, 0, end).fill(0, start);
   });
 
@@ -124,9 +125,10 @@ const generateTF = e => {
 
   const start = new Date(timeStartEl.value).getTime();
   const end = new Date(timeEndEl.value).getTime();
-  const perDay = TFPerDayEl.value;
-  const duration = minimumDurationEl.value;
+  const perDay = +TFPerDayEl.value;
+  const duration = +minimumDurationEl.value;
   const gaps = gapsArray();
+  const TFindexes = [];
   const result = [];
 
   console.log(start, end, perDay, duration, gaps);
@@ -136,18 +138,27 @@ const generateTF = e => {
   // check if there are enough minutes available after the index
   for (let i = 0; i < perDay; i++) {
     const start = Math.trunc(Math.random() * 1339);
-    if (!validateTF(start, gaps, duration)) continue;
-    else {
-    }
+    if (!validateTF(start, gaps, duration, TFindexes)) {
+      i--;
+      continue;
+    } else TFindexes.push(start);
   }
-  // mark indexes as used
+  TFindexes.sort((a, b) => a - b);
+  console.log(TFindexes);
 };
 
 // Validate time frame
-const validateTF = (start, gaps, duration) => {
+const validateTF = (start, gaps, duration, TFindexes) => {
+  // avoid time frame and gaps collision
   for (let i = start; i < start + duration; i++) {
-    if (gaps[i] === 0) return false;
+    if (!gaps[i]) return false;
   }
+  // make sure time frames are at least 'duration' apart
+  if (
+    TFindexes.filter(i => i > start - duration && i < start + duration).length
+  )
+    return false;
+
   return true;
 };
 

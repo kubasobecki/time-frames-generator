@@ -128,9 +128,10 @@ const gapsArray = () => {
 const isPossible = (gaps, duration, perDay) => {
   const timeAvailable = gaps.filter(el => el > 0).length;
   // Needs margin for worst case randomization
-  console.log(timeAvailable, (perDay + 2) * duration);
-  if (timeAvailable < duration * perDay + duration + 1) {
-    displayError('Time frames generation impossible with provided criteria.');
+  if (timeAvailable / 2 - 1 < perDay * duration) {
+    displayError(
+      'Successful time frames generation unlikely or impossible with current criteria.'
+    );
     return false;
   }
   return true;
@@ -155,13 +156,13 @@ const generateTF = e => {
   console.log(start, end, perDay, duration, gaps);
 
   for (let i = 0; i < perDay; i++) {
-    const start = Math.trunc(Math.random() * 1339);
+    const start = Math.trunc(Math.random() * 1340);
     if (!validateTF(start, gaps, duration, TFindexes)) {
       i--;
       continue;
     } else {
-      TFindexes.push(start);
       console.log(start);
+      TFindexes.push(start);
     }
   }
   TFindexes.sort((a, b) => a - b);
@@ -171,6 +172,7 @@ const generateTF = e => {
 // Validate time frame
 const validateTF = (start, gaps, duration, TFindexes) => {
   // avoid time frame collision with gaps
+  console.log(start, TFindexes);
   for (let i = start; i < start + duration; i++) {
     if (!gaps[i]) return false;
   }
